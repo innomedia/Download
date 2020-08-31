@@ -1,0 +1,8 @@
+---
+Name: DownloadModule
+---
+#Overwrite in own project if needed
+DownloadModuleConfig:
+  CategoriesHaveContent: false
+  #CSV-Style
+  CategoryStyles: "Style A"

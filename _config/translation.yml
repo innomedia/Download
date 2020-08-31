@@ -1,0 +1,18 @@
+---
+Name: downloadfluent
+Only:
+  moduleexists: 'tractorcow/silverstripe-fluent'
+After:
+  - '#versionedfiles'
+  - '#DownloadModule'
+---
+Download\Download:
+  extensions:
+    - TractorCow\Fluent\Extension\FluentExtension
+  field_exclude:
+    - TagSortTitle
+Download\DownloadCategory:
+  extensions:
+    - TractorCow\Fluent\Extension\FluentExtension
+  field_exclude:
+    - TagSortTitle
