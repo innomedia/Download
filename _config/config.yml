@@ -6,3 +6,4 @@ DownloadModuleConfig:
   CategoriesHaveContent: false
   #CSV-Style
   CategoryStyles: "Style A"
+  CategoriesEnabled: true
