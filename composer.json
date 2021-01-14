@@ -2,7 +2,6 @@
   "name":"innomedia/download",
   "description": "Download Module",
   "license": "BSD-3-Clause",
-  "version": "0.1",
   "authors": [
     {
       "name":"Innomedia AG",
