@@ -40,15 +40,17 @@ class DownloadModule extends Page
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-        $fields->addFieldToTab(
-            'Root.Kategorien',
-            GridField::create(
-                'DownloadCategories',
-                'DownloadCategories',
-                $this->DownloadCategories(),
-                GridFieldConfig_RecordEditor::create()->addComponent(new GridFieldSortableRows("SortOrder"))
-            )
-        );
+        if (Config::inst()->get("DownloadModuleConfig")["CategoriesEnabled"]) {
+            $fields->addFieldToTab(
+                'Root.Kategorien',
+                GridField::create(
+                    'DownloadCategories',
+                    'DownloadCategories',
+                    $this->DownloadCategories(),
+                    GridFieldConfig_RecordEditor::create()->addComponent(new GridFieldSortableRows("SortOrder"))
+                )
+            );
+        }
         $fields->addFieldToTab(
             'Root.Downloads',
             GridField::create(

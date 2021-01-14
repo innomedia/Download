@@ -84,7 +84,9 @@ class Download extends DataObject
                 'Vorschau Bild'
             )
         );
-        $fields->addFieldToTab('Root.Main', CheckboxSetField::create('DownloadCategories', 'Kategorien', DownloadCategory::get()->map()));
+        if (Config::inst()->get("DownloadModuleConfig")["CategoriesEnabled"]) {
+            $fields->addFieldToTab('Root.Main', CheckboxSetField::create('DownloadCategories', 'Kategorien', DownloadCategory::get()->map()));
+        }
         $fields->addFieldToTab('Root.Main', CheckboxField::create('ShowNewDownload', 'Als NEU markieren'));
 
         $this->extend('updateCMSFields', $fields);
