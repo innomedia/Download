@@ -68,7 +68,7 @@ class DownloadModule extends Page
                 $this->dbObject("FooterAsignment")->enumValues()
             )
         );*/
-        //$this->extend('updateCMSFields', $fields);
+        $this->extend('updateDownloadCMSFields', $fields);
         return $fields;
     }
 
