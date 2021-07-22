@@ -14,6 +14,7 @@ use Download\DownloadCategory;
 use Download\Download;
 use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 use SilverStripe\Core\Config\Config;
+use Symbiote\GridFieldExtensions\GridFieldOrderableRows;
 
 class DownloadModule extends Page
 {
@@ -47,7 +48,7 @@ class DownloadModule extends Page
                     'DownloadCategories',
                     'DownloadCategories',
                     $this->DownloadCategories(),
-                    GridFieldConfig_RecordEditor::create()->addComponent(new GridFieldSortableRows("SortOrder"))
+                    GridFieldConfig_RecordEditor::create()->addComponent(GridFieldOrderableRows::create("SortOrder"))
                 )
             );
         }
@@ -57,7 +58,7 @@ class DownloadModule extends Page
                 'Downloads',
                 'Downloads',
                 $this->Downloads(),
-                GridFieldConfig_RecordEditor::create()->addComponent(new GridFieldSortableRows("SortOrder"))
+                GridFieldConfig_RecordEditor::create()->addComponent(GridFieldOrderableRows::create("SortOrder"))
             )
         );
         /*$fields->addFieldToTab(
