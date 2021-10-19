@@ -9,6 +9,7 @@ use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataObject;
 
+use Download\DownloadSubCategory;
 use Download\Download;
 use SilverStripe\Dev\Debug;
 use SilverStripe\Core\Config\Config;
@@ -27,9 +28,7 @@ class DownloadCategory extends DataObject
         'Title' => 'Text',
         'Content' => 'HTMLText',
         'Style' => 'Varchar',
-        'TagSortTitle' => 'Text',
-        'SortOrder' =>  'Int'
-        
+        'TagSortTitle' => 'Text'
     ];
 
     public function onAfterWrite()
@@ -42,18 +41,19 @@ class DownloadCategory extends DataObject
     }
 
     private static $belongs_many_many = [
-        'Downloads' => Download::class
-        
+        'Downloads' => Download::class,
+        'DownloadModules' => DownloadModule::class
     ];
 
-    private static $has_one = [
-        'DownloadModule' => DownloadModule::class
+    private static $has_many = [
+        'DownloadSubCategories' => DownloadSubCategory::class,
     ];
 
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
         $fields->removeByName([
+            'DownloadSubCategories',
             'Downloads',
             'Style',
             'Content',
@@ -89,17 +89,41 @@ class DownloadCategory extends DataObject
                 )
             );
         }
+
+        if (Config::inst()->get("DownloadModuleConfig")["SubCategoriesEnabled"]) {
+            $fields->addFieldToTab(
+                'Root.Main',
+                GridField::create(
+                    'DownloadSubCategories',
+                    'DownloadSubCategories',
+                    $this->DownloadSubCategories(),
+                    GridFieldConfig_RecordEditor::create()
+                )
+            );
+        }
         $this->extend('updateCMSFields', $fields);
         return $fields;
     }
 
     public function Link()
     {
-        return $this->DownloadModule()->Link() . "#DownloadCat" . $this->ID;
+        return $this->DownloadModules()->first()->Link() . "#DownloadCat" . $this->ID;
     }
 
     public function SortedDownloads()
     {
-        return $this->Downloads()->sort("SortOrder ASC");
+        $filter = array();
+        foreach ($this->Downloads() as $downloads) {
+            array_push($filter, $downloads->ID);
+        }
+        if(count($filter)>0)
+        {
+          return $this->DownloadModules()->first()->Downloads()->filter(array("ID" => $filter))->sort("SortOrder ASC");
+        }
+        else
+        {
+          $this->DownloadModules()->first()->Downloads();
+        }
+
     }
 }

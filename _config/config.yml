@@ -3,7 +3,11 @@ Name: DownloadModule
 ---
 #Overwrite in own project if needed
 DownloadModuleConfig:
+  SubCategoriesEnabled: false
+  SubDownloadsEnabled: false
   CategoriesHaveContent: false
   #CSV-Style
   CategoryStyles: "Style A"
-  CategoriesEnabled: true
+  UseCategoryStylesForSubCategories: false
+  #CSV-Style
+  SubCategoryStyles: "Style A"

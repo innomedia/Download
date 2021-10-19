@@ -14,17 +14,18 @@ use Download\DownloadCategory;
 use Download\Download;
 use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 use SilverStripe\Core\Config\Config;
-use Symbiote\GridFieldExtensions\GridFieldOrderableRows;
 
 class DownloadModule extends Page
 {
-    private static $description = 'Hiermit können Sie eine Downloadseite erstellen - Downloads werden direkt im Module gepflegt';
+    private static $singular_name = 'Downloadmodul';
+    private static $plural_name = 'Downloadmodule';
+    private static $description ='Hier können Sie Dokumente hinterlegen, die in einer Übersicht zum Download angeboten werden.';
 
     private static $db = [
         'FooterAsignment' => 'Enum(array("Presse","Download"))',
     ];
 
-    private static $has_many = [
+    private static $many_many = [
         'DownloadCategories' => DownloadCategory::class,
         'Downloads' => Download::class
     ];
@@ -41,35 +42,38 @@ class DownloadModule extends Page
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-        if (Config::inst()->get("DownloadModuleConfig")["CategoriesEnabled"]) {
-            $fields->addFieldToTab(
-                'Root.Kategorien',
-                GridField::create(
-                    'DownloadCategories',
-                    'DownloadCategories',
-                    $this->DownloadCategories(),
-                    GridFieldConfig_RecordEditor::create()->addComponent(GridFieldOrderableRows::create("SortOrder"))
-                )
-            );
-        }
+        $fields->removeByName('WeitereLeistungen');
+        $fields->removeByName('AngeboteneLeistung');
+        $fields->removeByName('Gallerie');
+        $fields->removeByName('Icon');
+        $fields->removeByName('SecondContent');
+        $fields->addFieldToTab(
+            'Root.Kategorien',
+            GridField::create(
+                'DownloadCategories',
+                'DownloadCategories',
+                $this->DownloadCategories(),
+                GridFieldConfig_RecordEditor::create()->addComponent(new GridFieldSortableRows("SortOrder"))
+            )
+        );
         $fields->addFieldToTab(
             'Root.Downloads',
             GridField::create(
                 'Downloads',
                 'Downloads',
                 $this->Downloads(),
-                GridFieldConfig_RecordEditor::create()->addComponent(GridFieldOrderableRows::create("SortOrder"))
+                GridFieldConfig_RecordEditor::create()->addComponent(new GridFieldSortableRows("SortOrder"))
             )
         );
-        /*$fields->addFieldToTab(
+        $fields->addFieldToTab(
             'Root.Main',
             DropdownField::create(
                 'FooterAsignment',
                 'Footer Bereich',
                 $this->dbObject("FooterAsignment")->enumValues()
             )
-        );*/
-        $this->extend('updateDownloadCMSFields', $fields);
+        );
+        $this->extend('updateCMSFields', $fields);
         return $fields;
     }
 

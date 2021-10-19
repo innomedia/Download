@@ -12,6 +12,8 @@ use SilverStripe\ORM\DataObject;
 use SilverStripe\TagField\TagField;
 
 use Download\DownloadCategory;
+use Download\DownloadSubCategory;
+use Download\SubDownload;
 use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 use SilverStripe\Assets\File;
 use SilverStripe\Assets\Image;
@@ -21,7 +23,6 @@ use SilverStripe\Assets\Storage\AssetStore;
 use SilverStripe\Control\Director;
 use SilverStripe\AssetAdmin\Controller\AssetAdmin;
 use SilverStripe\Forms\CheckboxSetField;
-use SilverStripe\Forms\CheckboxField;
 
 class Download extends DataObject
 {
@@ -31,25 +32,28 @@ class Download extends DataObject
 
     private static $db = [
         'Title' => 'Text',
-        'TagSortTitle' => 'Text',
-        'SortOrder' =>  'Int',
-        'ShowNewDownload' => 'Boolean',
+        'SubDownloadContent' => 'HTMLText',
+        'TagSortTitle' => 'Text'
     ];
 
     private static $has_one = [
         'File' => File::class,
-        'PreviewThumbnail' => Image::class,
-        'DownloadModule'    => DownloadModule::class
+        'PreviewThumbnail' => Image::class
     ];
 
     private static $many_many = [
         'DownloadCategories' => DownloadCategory::class,
+        'DownloadSubCategories' => DownloadSubCategory::class
     ];
 
     public function Title()
     {
         return html_entity_decode(str_replace("|", "&shy;", $this->Title));
     }
+
+    private static $has_many = [
+        'SubDownloads' => SubDownload::class
+    ];
 
     /**
      * CMS Fields
@@ -61,6 +65,9 @@ class Download extends DataObject
 
         $fields->removeByName([
             'DownloadCategories',
+            'DownloadSubCategories',
+            'SubDownloads',
+            'SubDownloadContent',
             'TagSortTitle'
         ]);
         $fields->addFieldToTab(
@@ -84,11 +91,48 @@ class Download extends DataObject
                 'Vorschau Bild'
             )
         );
-        if (Config::inst()->get("DownloadModuleConfig")["CategoriesEnabled"]) {
-            $fields->addFieldToTab('Root.Main', CheckboxSetField::create('DownloadCategories', 'Kategorien', DownloadCategory::get()->map()));
-        }
-        $fields->addFieldToTab('Root.Main', CheckboxField::create('ShowNewDownload', 'Als NEU markieren'));
+        $fields->addFieldToTab('Root.Main', CheckboxSetField::create('DownloadCategories', 'Kategorien', DownloadCategory::get()->map()));
 
+        /*
+        $fields->addFieldToTab(
+          'Root.Main',
+          TagField::create(
+              'DownloadCategories',
+              'Download Kategorien',
+              DownloadCategory::get(),
+              $this->DownloadCategories()
+          )->setShouldLazyLoad(true)->setCanCreate(true)->setTitleField("TagSortTitle")
+        );
+        */
+        if (Config::inst()->get("DownloadModuleConfig")["SubDownloadsEnabled"]) {
+            $fields->addFieldToTab(
+                'Root.Unterteilte Downloads',
+                GridField::create(
+                    'SubDownloads',
+                    'Download (Unterteilt)',
+                    $this->SubDownloads(),
+                    GridFieldConfig_RecordEditor::create()->addComponent(new GridFieldSortableRows('SortOrder'))
+                )
+            );
+            $fields->addFieldToTab(
+                'Root.Unterteilte Downloads',
+                HtmlEditorField::create(
+                    'SubDownloadContent',
+                    'Inhalt'
+                )
+            );
+        }
+        if (Config::inst()->get("DownloadModuleConfig")["SubCategoriesEnabled"]) {
+            $fields->addFieldToTab(
+                'Root.Main',
+                TagField::create(
+                    'DownloadSubCategories',
+                    'Download Unter Kategorien',
+                    DownloadSubCategory::get(),
+                    $this->DownloadSubCategories()
+                )->setShouldLazyLoad(true)->setCanCreate(true)
+            );
+        }
         $this->extend('updateCMSFields', $fields);
         return $fields;
     }
@@ -112,7 +156,7 @@ class Download extends DataObject
                 $file_filename = Director::baseFolder() . "/public/assets/.protected" . str_replace("assets/", "", $store->getAsURL($this->File()->FileName, $this->File()->getHash()));
             }
 
-            if (strpos(strtolower($this->File()->FileName), ".pdf") !== false) {
+            if (strpos($this->File()->FileName, ".pdf") !== false) {
                 $cache_filename = str_replace(".pdf", "", str_replace("Uploads/", "", $this->File()->Name)) . ".jpg";
                 $absoluteFilePath = "/tmp/" . $cache_filename;
                 $command = self::$convert_path . ' ' . escapeshellarg($file_filename . '[' . (0) . ']') . ' -background "#FFFFFF" -flatten -quality 90 ' . escapeshellarg($absoluteFilePath);

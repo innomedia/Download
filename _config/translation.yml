@@ -16,3 +16,11 @@ Download\DownloadCategory:
     - TractorCow\Fluent\Extension\FluentExtension
   field_exclude:
     - TagSortTitle
+Download\DownloadSubCategory:
+  extensions:
+    - TractorCow\Fluent\Extension\FluentExtension
+  field_exclude:
+    - TagSortTitle
+Download\SubDownload:
+  extensions:
+    - TractorCow\Fluent\Extension\FluentExtension

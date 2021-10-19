@@ -1,16 +1,14 @@
 {
-  "name":"innomedia/download",
+  "name":"tietge/download",
   "description": "Download Module",
-  "license": "BSD-3-Clause",
   "authors": [
     {
-      "name":"Innomedia AG",
-      "email": "bk@innomedia.de"
+      "name":"Tietge GmbH",
+      "email": "info@tietge.com"
     }
   ],
   "require":{
-    "silverstripe/recipe-cms": "^4",
-    "symbiote/silverstripe-gridfieldextensions": "^3"
+    "silverstripe/recipe-cms": "^1.1"
   },
   "autoload": {
     "psr-4": {
