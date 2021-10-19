@@ -8,7 +8,6 @@
     }
   ],
   "require":{
-    "silverstripe/recipe-cms": "^1.1"
   },
   "autoload": {
     "psr-4": {
