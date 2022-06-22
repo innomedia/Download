@@ -9,7 +9,6 @@
     }
   ],
   "require":{
-    "silverstripe/recipe-cms": "^4",
     "symbiote/silverstripe-gridfieldextensions": "^3"
   },
   "autoload": {
