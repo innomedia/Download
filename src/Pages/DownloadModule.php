@@ -89,6 +89,10 @@ class DownloadModule extends Page
                 $Download->ProtectFiles($this->CanViewType,$this->ViewerGroups());
             }
             $Download->write();
+            if(!$protecteddownloadmodule)
+            {
+                $Download->PublishFiles($this->CanViewType);
+            }
         }
         foreach($this->DownloadCategories() as $DownloadCategories)
         {
