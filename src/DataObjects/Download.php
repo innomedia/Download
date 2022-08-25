@@ -213,5 +213,14 @@ class Download extends DataObject
             $this->TagSortTitle = $this->Title;
             $this->write();
         }
+        $protecteddownloadmodule = $this->DownloadModule()->ViewerGroups()->Count() > 0 && $this->DownloadModule()->CanViewType == "OnlyTheseUsers" || $this->DownloadModule()->CanViewType == "LoggedInUsers";
+        if($protecteddownloadmodule)
+        {
+            $this->ProtectFiles($this->DownloadModule()->CanViewType,$this->DownloadModule()->ViewerGroups());
+        }
+        else
+        {
+            $this->PublishFiles($this->DownloadModule()->CanViewType);
+        }
     }
 }
