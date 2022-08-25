@@ -55,10 +55,9 @@ class Download extends DataObject
     {
         $this->ProtectFile($this->File(),$CanViewType,$ViewerGroups);
         $this->ProtectFile($this->PreviewThumbnail(),$CanViewType,$ViewerGroups);
-        
-
+        $this->extend("UpdateProtectFiles",$CanViewType,$ViewerGroups);
     }
-    private function ProtectFile($file,$CanViewType,$ViewerGroups)
+    public function ProtectFile($file,$CanViewType,$ViewerGroups = null)
     {
         $writefile = false;
         if($file->CanViewType != $CanViewType)
@@ -66,15 +65,36 @@ class Download extends DataObject
             $file->CanViewType = $CanViewType;
             $writefile = true;
         }
-        foreach($ViewerGroups as $group)
+        if($ViewerGroups != null && count($ViewerGroups) > 0 && $CanViewType == "OnlyTheseUsers")
         {
-            if($file->ViewerGroups()->filter("ID",$group->ID)->Count() == 0)
+            $groupids = [];
+            foreach($ViewerGroups as $group)
             {
-                $file->ViewerGroups()->add($group);
+                $groupids[] = $group->ID;
+                if($file->ViewerGroups()->filter("ID",$group->ID)->Count() == 0)
+                {
+                    $file->ViewerGroups()->add($group);
+                    $writefile = true;
+                } 
+            }
+            if(count($groupids) > 0 )
+            {
+                foreach($file->ViewerGroups()->exclude("ID",$groupids) as $removedGroup)
+                {
+                    $file->ViewerGroups()->remove($removedGroup);
+                    $writefile = true;
+                }
+            }
+        }
+        else
+        {
+            foreach($file->ViewerGroups() as $group)
+            {
+                $file->ViewerGroups()->remove($group);
                 $writefile = true;
             }
-            
         }
+        
         if($writefile == true)
         {
             $file->write();
