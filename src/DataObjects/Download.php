@@ -51,6 +51,35 @@ class Download extends DataObject
         return html_entity_decode(str_replace("|", "&shy;", $this->Title));
     }
     
+    public function PublishFiles($CanViewType)
+    {
+        $this->PublishFile($this->File(),$CanViewType);
+        $this->PublishFile($this->PreviewThumbnail(),$CanViewType);
+        $this->extend("UpdatePublishFiles",$CanViewType);
+    }
+    public function PublishFile($file,$CanViewType)
+    {
+        $writefile = false;
+        if($file->CanViewType != $CanViewType)
+        {
+            $file->CanViewType = $CanViewType;
+            $writefile = true;
+        }
+        if($file->ViewerGroups()->count() > 0)
+        {
+            $writefile = true;
+            foreach($file->ViewerGroups() as $deleteGroup)
+            {
+                $file->ViewerGroups()->remove($deleteGroup);
+            }
+        }
+        if($writefile)
+        {
+            $file->PublishFile();
+            $file->write();
+        }
+    }
+    
     public function ProtectFiles($CanViewType,$ViewerGroups)
     {
         $this->ProtectFile($this->File(),$CanViewType,$ViewerGroups);
