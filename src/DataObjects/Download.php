@@ -50,6 +50,36 @@ class Download extends DataObject
     {
         return html_entity_decode(str_replace("|", "&shy;", $this->Title));
     }
+    
+    public function ProtectFiles($CanViewType,$ViewerGroups)
+    {
+        $this->ProtectFile($this->File(),$CanViewType,$ViewerGroups);
+        $this->ProtectFile($this->PreviewThumbnail(),$CanViewType,$ViewerGroups);
+        
+
+    }
+    private function ProtectFile($file,$CanViewType,$ViewerGroups)
+    {
+        $writefile = false;
+        if($file->CanViewType != $CanViewType)
+        {
+            $file->CanViewType = $CanViewType;
+            $writefile = true;
+        }
+        foreach($ViewerGroups as $group)
+        {
+            if($file->ViewerGroups()->filter("ID",$group->ID)->Count() == 0)
+            {
+                $file->ViewerGroups()->add($group);
+                $writefile = true;
+            }
+            
+        }
+        if($writefile == true)
+        {
+            $file->write();
+        }
+    }
 
     /**
      * CMS Fields
