@@ -81,8 +81,13 @@ class DownloadModule extends Page
     public function onAfterWrite()
     {
         parent::onAfterWrite();
+        $protecteddownloadmodule = $this->ViewerGroups()->Count() > 0 && $this->CanViewType == "OnlyTheseUsers" || $this->CanViewType == "LoggedInUsers";
         foreach($this->Downloads() as $Download)
         {
+            if($protecteddownloadmodule)
+            {
+                $Download->ProtectFiles($this->CanViewType,$this->ViewerGroups());
+            }
             $Download->write();
         }
         foreach($this->DownloadCategories() as $DownloadCategories)
