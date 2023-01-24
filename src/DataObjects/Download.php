@@ -184,7 +184,7 @@ class Download extends DataObject
                         $this->write();
                     }
                 }
-            } catch (\Exception$ex) {
+            } catch (\Exception $ex) {
 
             }
 
