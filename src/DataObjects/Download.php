@@ -2,26 +2,18 @@
 
 namespace Download;
 
-use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
-use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
-use SilverStripe\Forms\GridField\GridFieldConfig_RelationEditor;
-use SilverStripe\Forms\GridField\GridField;
-use SilverStripe\AssetAdmin\Forms\UploadField;
-use SilverStripe\Forms\TextField;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\TagField\TagField;
-
 use Download\DownloadCategory;
-use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
+use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Assets\File;
 use SilverStripe\Assets\Image;
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Assets\Storage\AssetStore;
 use SilverStripe\Control\Director;
-use SilverStripe\AssetAdmin\Controller\AssetAdmin;
-use SilverStripe\Forms\CheckboxSetField;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Forms\CheckboxSetField;
+use SilverStripe\Forms\TextField;
+use SilverStripe\ORM\DataObject;
 
 class Download extends DataObject
 {
@@ -32,14 +24,14 @@ class Download extends DataObject
     private static $db = [
         'Title' => 'Text',
         'TagSortTitle' => 'Text',
-        'SortOrder' =>  'Int',
+        'SortOrder' => 'Int',
         'ShowNewDownload' => 'Boolean',
     ];
 
     private static $has_one = [
         'File' => File::class,
         'PreviewThumbnail' => Image::class,
-        'DownloadModule'    => DownloadModule::class
+        'DownloadModule' => DownloadModule::class,
     ];
 
     private static $many_many = [
@@ -50,82 +42,68 @@ class Download extends DataObject
     {
         return html_entity_decode(str_replace("|", "&shy;", $this->Title));
     }
-    
+
     public function PublishFiles($CanViewType)
     {
-        $this->PublishFile($this->File(),$CanViewType);
-        $this->PublishFile($this->PreviewThumbnail(),$CanViewType);
-        $this->extend("UpdatePublishFiles",$CanViewType);
+        $this->PublishFile($this->File(), $CanViewType);
+        $this->PublishFile($this->PreviewThumbnail(), $CanViewType);
+        $this->extend("UpdatePublishFiles", $CanViewType);
     }
-    public function PublishFile($file,$CanViewType)
+    public function PublishFile($file, $CanViewType)
     {
         $writefile = false;
-        if($file->CanViewType != $CanViewType)
-        {
+        if ($file->CanViewType != $CanViewType) {
             $file->CanViewType = $CanViewType;
             $writefile = true;
         }
-        if($file->ViewerGroups()->count() > 0)
-        {
+        if ($file->ViewerGroups()->count() > 0) {
             $writefile = true;
-            foreach($file->ViewerGroups() as $deleteGroup)
-            {
+            foreach ($file->ViewerGroups() as $deleteGroup) {
                 $file->ViewerGroups()->remove($deleteGroup);
             }
         }
-        if($writefile)
-        {
+        if ($writefile) {
             $file->PublishFile();
             $file->write();
         }
     }
-    
-    public function ProtectFiles($CanViewType,$ViewerGroups)
+
+    public function ProtectFiles($CanViewType, $ViewerGroups)
     {
-        $this->ProtectFile($this->File(),$CanViewType,$ViewerGroups);
-        $this->ProtectFile($this->PreviewThumbnail(),$CanViewType,$ViewerGroups);
-        $this->extend("UpdateProtectFiles",$CanViewType,$ViewerGroups);
+        $this->ProtectFile($this->File(), $CanViewType, $ViewerGroups);
+        $this->ProtectFile($this->PreviewThumbnail(), $CanViewType, $ViewerGroups);
+        $this->extend("UpdateProtectFiles", $CanViewType, $ViewerGroups);
     }
-    public function ProtectFile($file,$CanViewType,$ViewerGroups = null)
+    public function ProtectFile($file, $CanViewType, $ViewerGroups = null)
     {
         $writefile = false;
-        if($file->CanViewType != $CanViewType)
-        {
+        if ($file->CanViewType != $CanViewType) {
             $file->CanViewType = $CanViewType;
             $writefile = true;
         }
-        if($ViewerGroups != null && count($ViewerGroups) > 0 && $CanViewType == "OnlyTheseUsers")
-        {
+        if ($ViewerGroups != null && count($ViewerGroups) > 0 && $CanViewType == "OnlyTheseUsers") {
             $groupids = [];
-            foreach($ViewerGroups as $group)
-            {
+            foreach ($ViewerGroups as $group) {
                 $groupids[] = $group->ID;
-                if($file->ViewerGroups()->filter("ID",$group->ID)->Count() == 0)
-                {
+                if ($file->ViewerGroups()->filter("ID", $group->ID)->Count() == 0) {
                     $file->ViewerGroups()->add($group);
                     $writefile = true;
-                } 
+                }
             }
-            if(count($groupids) > 0 )
-            {
-                foreach($file->ViewerGroups()->exclude("ID",$groupids) as $removedGroup)
-                {
+            if (count($groupids) > 0) {
+                foreach ($file->ViewerGroups()->exclude("ID", $groupids) as $removedGroup) {
                     $file->ViewerGroups()->remove($removedGroup);
                     $writefile = true;
                 }
             }
-        }
-        else
-        {
-            foreach($file->ViewerGroups() as $group)
-            {
+        } else {
+            foreach ($file->ViewerGroups() as $group) {
                 $file->ViewerGroups()->remove($group);
                 $writefile = true;
             }
         }
-        
-        if($writefile == true)
-        {
+
+        if ($writefile == true) {
             $file->write();
         }
     }
@@ -140,7 +118,7 @@ class Download extends DataObject
 
         $fields->removeByName([
             'DownloadCategories',
-            'TagSortTitle'
+            'TagSortTitle',
         ]);
         $fields->addFieldToTab(
             'Root.Main',
@@ -187,25 +165,31 @@ class Download extends DataObject
             //\SilverStripe\Dev\Debug::dump($this->File()->FileName);die;
             $store = Injector::inst()->get(AssetStore::class);
             $file_filename = Director::baseFolder() . "/public/assets" . str_replace("assets/", "", $store->getAsURL($this->File()->FileName, $this->File()->getHash()));
-            if(!file_exists($file_filename)){
+            if (!file_exists($file_filename)) {
                 $file_filename = Director::baseFolder() . "/public/assets/.protected" . str_replace("assets/", "", $store->getAsURL($this->File()->FileName, $this->File()->getHash()));
             }
+            try {
+                if (strpos(strtolower($this->File()->FileName), ".pdf") !== false) {
+                    $cache_filename = str_replace(".pdf", "", str_replace("Uploads/", "", $this->File()->Name)) . ".jpg";
+                    $absoluteFilePath = "/tmp/" . $cache_filename;
+                    $command = self::$convert_path . ' ' . escapeshellarg($file_filename . '[' . (0) . ']') . ' -background "#FFFFFF" -flatten -quality 90 ' . escapeshellarg($absoluteFilePath);
+                    $out = shell_exec($command);
+                    if (file_exists($absoluteFilePath)) {
+                        $img = new Image();
+                        $img->setFromLocalFile($absoluteFilePath, 'Uploads/' . str_replace("/tmp/", "", $absoluteFilePath));
+                        $img->write();
+                        $img->doPublish();
 
-            if (strpos(strtolower($this->File()->FileName), ".pdf") !== false) {
-                $cache_filename = str_replace(".pdf", "", str_replace("Uploads/", "", $this->File()->Name)) . ".jpg";
-                $absoluteFilePath = "/tmp/" . $cache_filename;
-                $command = self::$convert_path . ' ' . escapeshellarg($file_filename . '[' . (0) . ']') . ' -background "#FFFFFF" -flatten -quality 90 ' . escapeshellarg($absoluteFilePath);
-                $out = shell_exec($command);
-                $img = new Image();
-                $img->setFromLocalFile($absoluteFilePath, 'Uploads/' . str_replace("/tmp/", "", $absoluteFilePath));
-                $img->write();
-                $img->doPublish();
+                        $this->PreviewThumbnailID = $img->ID;
+                        $this->write();
+                    }
+                }
+            } catch (\Exception$ex) {
 
-                $this->PreviewThumbnailID = $img->ID;
-                $this->write();
             }
+
         }
-        if (($this->Title == NULL || $this->Title == "") && $this->TagSortTitle != "") {
+        if (($this->Title == null || $this->Title == "") && $this->TagSortTitle != "") {
             $this->Title = $this->TagSortTitle;
             $this->write();
         }
@@ -214,12 +198,9 @@ class Download extends DataObject
             $this->write();
         }
         $protecteddownloadmodule = $this->DownloadModule()->ViewerGroups()->Count() > 0 && $this->DownloadModule()->CanViewType == "OnlyTheseUsers" || $this->DownloadModule()->CanViewType == "LoggedInUsers";
-        if($protecteddownloadmodule)
-        {
-            $this->ProtectFiles($this->DownloadModule()->CanViewType,$this->DownloadModule()->ViewerGroups());
-        }
-        else
-        {
+        if ($protecteddownloadmodule) {
+            $this->ProtectFiles($this->DownloadModule()->CanViewType, $this->DownloadModule()->ViewerGroups());
+        } else {
             $this->PublishFiles($this->DownloadModule()->CanViewType);
         }
     }
