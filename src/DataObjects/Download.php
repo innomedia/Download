@@ -204,4 +204,5 @@ class Download extends DataObject
             $this->PublishFiles($this->DownloadModule()->CanViewType);
         }
     }
+    
 }

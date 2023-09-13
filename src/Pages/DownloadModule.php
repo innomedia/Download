@@ -100,5 +100,15 @@ class DownloadModule extends Page
         }
     }
 
+    public function canCreate($member = null,$context = [])
+    {
+        if(Config::inst()->get("DownloadModuleConfig") == null || Config::inst()->get("DownloadModuleConfig") != null && !array_key_exists("CanCreatePages",Config::inst()->get("DownloadModuleConfig")))
+        {
+            //if not configured alway allow
+            return true;
+        }
+        return Config::inst()->get("DownloadModuleConfig")["CanCreatePages"] && parent::canCreate($member,$context);
+    }
+
 
 }

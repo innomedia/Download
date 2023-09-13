@@ -7,3 +7,5 @@ DownloadModuleConfig:
   #CSV-Style
   CategoryStyles: "Style A"
   CategoriesEnabled: true
+  CanCreatePages: true
+  ModelAdminVisible: true
