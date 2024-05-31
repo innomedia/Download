@@ -119,6 +119,8 @@ class Download extends DataObject
         $fields->removeByName([
             'DownloadCategories',
             'TagSortTitle',
+            'DownloadModuleID',
+            'SortOrder'
         ]);
         $fields->addFieldToTab(
             'Root.Main',
