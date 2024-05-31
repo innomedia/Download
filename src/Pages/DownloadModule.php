@@ -46,7 +46,7 @@ class DownloadModule extends Page
                 'Root.Kategorien',
                 GridField::create(
                     'DownloadCategories',
-                    'DownloadCategories',
+                    _t(__CLASS__ . '.CATEGORIES', 'Kategorien'),
                     $this->SortedCategories(),
                     GridFieldConfig_RecordEditor::create()->addComponent(GridFieldOrderableRows::create("SortOrder"))
                 )
@@ -56,7 +56,7 @@ class DownloadModule extends Page
             'Root.Downloads',
             GridField::create(
                 'Downloads',
-                'Downloads',
+                _t(__CLASS__ . '.DOWNLOADS', 'Downloads'),
                 $this->sortedDownloads(),
                 GridFieldConfig_RecordEditor::create()->addComponent(GridFieldOrderableRows::create("SortOrder"))
             )
