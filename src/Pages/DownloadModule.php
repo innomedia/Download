@@ -47,7 +47,7 @@ class DownloadModule extends Page
                 GridField::create(
                     'DownloadCategories',
                     'DownloadCategories',
-                    $this->DownloadCategories(),
+                    $this->SortedCategories(),
                     GridFieldConfig_RecordEditor::create()->addComponent(GridFieldOrderableRows::create("SortOrder"))
                 )
             );
@@ -57,7 +57,7 @@ class DownloadModule extends Page
             GridField::create(
                 'Downloads',
                 'Downloads',
-                $this->Downloads(),
+                $this->sortedDownloads(),
                 GridFieldConfig_RecordEditor::create()->addComponent(GridFieldOrderableRows::create("SortOrder"))
             )
         );
@@ -76,6 +76,11 @@ class DownloadModule extends Page
     public function SortedCategories()
     {
         return $this->DownloadCategories()->sort('SortOrder ASC');
+    }
+    
+    public function sortedDownloads()
+    {
+        return $this->Downloads()->sort('SortOrder ASC');
     }
 
     public function onAfterWrite()
