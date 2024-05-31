@@ -9,7 +9,7 @@
     }
   ],
   "require":{
-    "symbiote/silverstripe-gridfieldextensions": "^3"
+    "symbiote/silverstripe-gridfieldextensions": "^4"
   },
   "autoload": {
     "psr-4": {
