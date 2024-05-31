@@ -2,6 +2,7 @@
 
 namespace Download;
 
+use SilverStripe\Control\Controller;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\HTMLEditor\HtmlEditorField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
@@ -97,7 +98,7 @@ class DownloadCategory extends DataObject
 
     public function Link()
     {
-        return $this->DownloadModule()->Link() . "#DownloadCat" . $this->ID;
+        return Controller::join_links($this->DownloadModule()->Link(), "category", $this->ID);
     }
 
     public function SortedDownloads()
