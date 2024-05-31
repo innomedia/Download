@@ -8,3 +8,5 @@ de:
   Download\DownloadModule:
     SINGULARNAME: 'Download Modul'
     PLURALNAME: 'Download Modul'
+    CATEGORIES: 'Kategorien'
+    DOWNLOADS: 'Downloads'
