@@ -57,7 +57,9 @@ class DownloadCategory extends DataObject
             'Downloads',
             'Style',
             'Content',
-            'TagSortTitle'
+            'TagSortTitle',
+            'SortOrder',
+            'DownloadModuleID'
         ]);
         if (Config::inst()->get("DownloadModuleConfig")["CategoryStyles"] != "" && count($Styles = explode(",", Config::inst()->get("DownloadModuleConfig")["CategoryStyles"])) > 1) {
             $array = array();
