@@ -180,7 +180,13 @@ class Download extends DataObject
                         $img = new Image();
                         $img->setFromLocalFile($absoluteFilePath, 'Uploads/' . str_replace("/tmp/", "", $absoluteFilePath));
                         $img->write();
-                        $img->doPublish();
+
+                        // Das Bild veröffentlichen
+                        if ($img->hasMethod('publishSingle')) {
+                            $img->publishSingle();
+                        } else {
+                            $img->doPublish();
+                        }
 
                         $this->PreviewThumbnailID = $img->ID;
                         $this->write();
