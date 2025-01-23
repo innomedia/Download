@@ -38,7 +38,7 @@ class Download extends DataObject
         'DownloadCategories' => DownloadCategory::class,
     ];
 
-    public function Title()
+    public function PreparedTitle()
     {
         return html_entity_decode(str_replace("|", "&shy;", $this->Title));
     }
