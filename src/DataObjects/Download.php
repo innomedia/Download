@@ -120,7 +120,8 @@ class Download extends DataObject
             'DownloadCategories',
             'TagSortTitle',
             'DownloadModuleID',
-            'SortOrder'
+            'SortOrder',
+            'PreviewThumbnail',
         ]);
         $fields->addFieldToTab(
             'Root.Main',
@@ -136,13 +137,15 @@ class Download extends DataObject
                 'Datei'
             )
         );
-        $fields->addFieldToTab(
-            'Root.Main',
-            UploadField::create(
-                'PreviewThumbnail',
-                'Vorschau Bild'
-            )
-        );
+        if(Config::inst()->get("DownloadModuleConfig")["PreviewImageEnabled"]){
+            $fields->addFieldToTab(
+                'Root.Main',
+                UploadField::create(
+                    'PreviewThumbnail',
+                    'Vorschau Bild'
+                )
+            );
+        }
         if (Config::inst()->get("DownloadModuleConfig")["CategoriesEnabled"]) {
             $fields->addFieldToTab('Root.Main', CheckboxSetField::create('DownloadCategories', 'Kategorien', DownloadCategory::get()->map()));
         }
@@ -163,7 +166,7 @@ class Download extends DataObject
     public function onAfterWrite()
     {
         parent::onAfterWrite();
-        if ($this->PreviewThumbnailID == 0) {
+        if ($this->PreviewThumbnailID == 0 && Config::inst()->get("DownloadModuleConfig")["PreviewImageEnabled"]) {
             //\SilverStripe\Dev\Debug::dump($this->File()->FileName);die;
             $store = Injector::inst()->get(AssetStore::class);
             $file_filename = Director::baseFolder() . "/public/assets" . str_replace("assets/", "", $store->getAsURL($this->File()->FileName, $this->File()->getHash()));
