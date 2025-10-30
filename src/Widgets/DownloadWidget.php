@@ -1,7 +1,6 @@
 <?php
 
 namespace Download;
-use SilverStripe\Control\Controller;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Widgets\Model\Widget;
 
@@ -17,45 +16,27 @@ if (!class_exists(Widget::class)) {
  */
 class DownloadWidget extends Widget
 {
-    /**
-     * @var string
-     */
-    private static $title = 'Download Widget';
+    private static string $title = 'Download Widget';
 
-    /**
-     * @var string
-     */
-    private static $cmsTitle = 'Download Widget';
+    private static string $cmsTitle = 'Download Widget';
 
-    /**
-     * @var string
-     */
-    private static $description = 'Displays one Download';
+    private static string $description = 'Displays one Download';
 
-    /**
-     * @var array
-     */
-    private static $db = [
+    private static array $db = [
     ];
 
-    /**
-     * @var array
-     */
-    private static $has_one = [
+    private static array $has_one = [
         'Download' => Download::class,
     ];
 
-    /**
-     * @var string
-     */
-    private static $table_name = 'DownloadWidget';
+    private static string $table_name = 'DownloadWidget';
 
     /**
      * {@inheritdoc}
      */
     public function getCMSFields()
     {
-        $this->beforeUpdateCMSFields(function ($fields) {
+        $this->beforeUpdateCMSFields(function ($fields): void {
 
             /**
              * @var FieldList $fields

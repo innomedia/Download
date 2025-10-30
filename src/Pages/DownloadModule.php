@@ -3,33 +3,28 @@
 namespace Download;
 
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
-use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\GridField\GridField;
-use SilverStripe\Forms\TextField;
-use SilverStripe\Dev\Debug;
-use SilverStripe\CMS\Model\SiteTree;
 
 use Page;
 use Download\DownloadCategory;
 use Download\Download;
-use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 use SilverStripe\Core\Config\Config;
 use Symbiote\GridFieldExtensions\GridFieldOrderableRows;
 
 class DownloadModule extends Page
 {
-    private static $description = 'Hiermit können Sie eine Downloadseite erstellen - Downloads werden direkt im Module gepflegt';
+    private static string $description = 'Hiermit können Sie eine Downloadseite erstellen - Downloads werden direkt im Module gepflegt';
 
-    private static $db = [
+    private static array $db = [
         'FooterAsignment' => 'Enum(array("Presse","Download"))',
     ];
 
-    private static $has_many = [
+    private static array $has_many = [
         'DownloadCategories' => DownloadCategory::class,
         'Downloads' => Download::class
     ];
 
-    private static $many_many_extraFields = [
+    private static array $many_many_extraFields = [
         'DownloadCategories' => [
             'SortOrder' => 'Int'
         ],
@@ -52,6 +47,7 @@ class DownloadModule extends Page
                 )
             );
         }
+        
         $fields->addFieldToTab(
             'Root.Downloads',
             GridField::create(
@@ -83,7 +79,7 @@ class DownloadModule extends Page
         return $this->Downloads()->sort('SortOrder ASC');
     }
 
-    public function onAfterWrite()
+    public function onAfterWrite(): void
     {
         parent::onAfterWrite();
         $protecteddownloadmodule = $this->ViewerGroups()->Count() > 0 && $this->CanViewType == "OnlyTheseUsers" || $this->CanViewType == "LoggedInUsers";
@@ -93,12 +89,14 @@ class DownloadModule extends Page
             {
                 $Download->ProtectFiles($this->CanViewType,$this->ViewerGroups());
             }
+            
             $Download->write();
             if(!$protecteddownloadmodule)
             {
                 $Download->PublishFiles($this->CanViewType);
             }
         }
+        
         foreach($this->DownloadCategories() as $DownloadCategories)
         {
             $DownloadCategories->write();
@@ -112,6 +110,7 @@ class DownloadModule extends Page
             //if not configured alway allow
             return true;
         }
+        
         return Config::inst()->get("DownloadModuleConfig")["CanCreatePages"] && parent::canCreate($member,$context);
     }
 

@@ -9,11 +9,22 @@
     }
   ],
   "require":{
-    "symbiote/silverstripe-gridfieldextensions": "^4"
+    "symbiote/silverstripe-gridfieldextensions": "^5"
   },
   "autoload": {
     "psr-4": {
       "Download\\": "src/"
+    }
+  },
+  "require-dev": {
+    "rector/rector": "^2.2",
+    "phpstan/phpstan": "^2.1",
+    "wernerkrauss/silverstripe-rector": "^1.0"
+  },
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true,
+      "silverstripe/vendor-plugin": true
     }
   }
 }

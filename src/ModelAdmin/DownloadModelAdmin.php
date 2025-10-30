@@ -5,13 +5,14 @@ use SilverStripe\Admin\ModelAdmin;
 
 class DownloadModelAdmin extends ModelAdmin
 {
-    private static $managed_models = [
+    private static array $managed_models = [
         Download::class,
         DownloadCategory::class,
 
     ];
-    private static $url_segment = 'Downloads';
+    
+    private static string $url_segment = 'Downloads';
 
-    private static $menu_title = 'Downloads';
+    private static string $menu_title = 'Downloads';
     
 }

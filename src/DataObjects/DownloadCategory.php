@@ -5,13 +5,10 @@ namespace Download;
 use SilverStripe\Control\Controller;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\HTMLEditor\HtmlEditorField;
-use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
-use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataObject;
 
 use Download\Download;
-use SilverStripe\Dev\Debug;
 use SilverStripe\Core\Config\Config;
 
 /**
@@ -22,9 +19,9 @@ use SilverStripe\Core\Config\Config;
  */
 class DownloadCategory extends DataObject
 {
-    private static $table_name = 'DownloadCategory';
+    private static string $table_name = 'DownloadCategory';
 
-    private static $db = [
+    private static array $db = [
         'Title' => 'Text',
         'Content' => 'HTMLText',
         'Style' => 'Varchar',
@@ -33,7 +30,7 @@ class DownloadCategory extends DataObject
         
     ];
 
-    public function onAfterWrite()
+    protected function onAfterWrite()
     {
         parent::onAfterWrite();
         if ($this->TagSortTitle != $this->Title) {
@@ -42,12 +39,12 @@ class DownloadCategory extends DataObject
         }
     }
 
-    private static $belongs_many_many = [
+    private static array $belongs_many_many = [
         'Downloads' => Download::class
         
     ];
 
-    private static $has_one = [
+    private static array $has_one = [
         'DownloadModule' => DownloadModule::class
     ];
 
@@ -64,9 +61,10 @@ class DownloadCategory extends DataObject
         ]);
         if (Config::inst()->get("DownloadModuleConfig")["CategoryStyles"] != "" && count($Styles = explode(",", Config::inst()->get("DownloadModuleConfig")["CategoryStyles"])) > 1) {
             $array = array();
-            foreach (explode(",", Config::inst()->get("DownloadModuleConfig")["CategoryStyles"]) as $key => $value) {
+            foreach (explode(",", Config::inst()->get("DownloadModuleConfig")["CategoryStyles"]) as $value) {
                 $array[$value] = $value;
             }
+            
             $fields->addFieldToTab(
                 'Root.Main',
                 DropdownField::create(
@@ -76,6 +74,7 @@ class DownloadCategory extends DataObject
                 )
             );
         }
+        
         $fields->addFieldToTab(
             'Root.Main',
             TextField::create(
@@ -92,11 +91,12 @@ class DownloadCategory extends DataObject
                 )
             );
         }
+        
         $this->extend('updateCMSFields', $fields);
         return $fields;
     }
 
-    public function Link()
+    public function Link(): string
     {
         return Controller::join_links($this->DownloadModule()->Link(), "category", $this->ID);
     }
